@@ -69,16 +69,12 @@ bool parse(std::vector<Token> &tokens)
 
         if (token.type == TOKEN_COMMAND) {
             hasCommand = true;
-            // FIX: Call expand_wildcards with a strdup'd copy
             expand_wildcards(currentSimpleCommand, strdup(token.value.data()));
         }
         else if (token.type == TOKEN_ARGUMENT) {
-            // FIX: Call expand_wildcards for arguments too
             expand_wildcards(currentSimpleCommand, strdup(token.value.data()));
         }
         else if (token.type == TOKEN_PIPE) {
-            // ... (rest of your logic is correct) ...
-// ... (rest of parse() is identical to yours) ...
             if (lastTokenType == TOKEN_PIPE) {
                 fprintf(stderr, "Error: Malformed consecutive pipes.\n");
                 delete currentSimpleCommand;
@@ -328,7 +324,6 @@ void Command::print()
     printf("\n\n");
     printf("  Output       Input        Error        Background\n");
     printf("  ------------ ------------ ------------ ------------\n");
-    // FIX: Removed non-existent _out_error and added _append check
     printf("  %-12s %-12s %-12s %-12s\n", 
            _outFile ? _outFile : "default",
            _inputFile ? _inputFile : "default", 
@@ -478,9 +473,6 @@ void Command::execute()
             // This is the parent process
 
             // Manage file descriptors for the next loop iteration
-
-            // If we're not the first command, close the read-end of the
-            // *previous* pipe, which the child now has.
             if (i > 0) {
                 close(input_fd);
             }
