@@ -1,0 +1,219 @@
+name: Autograding Tests
+
+on:
+  push:
+    branches:
+      - student
+  repository_dispatch:
+  workflow_dispatch:
+
+permissions:
+  checks: write
+  actions: read
+  contents: read
+
+jobs:
+  run-autograding-tests:
+    runs-on: docker
+    container: gcc:latest
+    
+    if: github.actor != 'github-classroom[bot]'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # Optional speed/stability tweaks (safe to keep)
+      # - name: Disable initramfs update
+      #   run: sudo sed -i 's/yes/no/g' /etc/initramfs-tools/update-initramfs.conf
+      - name: Disable man-db update
+        # run: sudo rm -f /var/lib/man-db/auto-update
+        run: rm -f /var/lib/man-db/auto-update
+
+      - name: Build myshell (robust)
+        run: |
+          echo "CWD: $(pwd)"
+          ls -la
+          if [ -f Makefile ]; then
+            echo "Makefile found — running make"
+            make
+          else
+            echo "No Makefile — compiling directly"
+            g++ -std=gnu++17 -O2 -Wall -Wextra -Wno-unused-parameter command.cc tokenizer.cc -o myshell
+          fi
+          ls -la
+
+      - name: Set up Script Permissions
+        run: chmod +x ./**/*.sh
+
+      # ---------------- INDIVIDUAL TESTS (2 points each) ----------------
+      - name: basic-ls-al
+        id: basic-ls-al
+        uses: classroom-resources/autograding-command-grader@v1
+        with:
+          test-name: basic-ls-al
+          setup-command: chmod +x ./testcases/basic_ls_al.sh
+          command: bash -lc 'cd testcases && ./basic_ls_al.sh'
+          expected-output: "2"
+          comparison-method: exact
+          timeout: 10
+          max-score: 2
+        timeout-minutes: 1
+
+      - name: echo-hello-os-lab
+        id: echo-hello-os-lab
+        uses: classroom-resources/autograding-command-grader@v1
+        with:
+          test-name: echo-hello-os-lab
+          setup-command: chmod +x ./testcases/echo_hello_os_lab.sh
+          command: bash -lc 'cd testcases && ./echo_hello_os_lab.sh'
+          expected-output: "2"
+          comparison-method: exact
+          timeout: 10
+          max-score: 2
+        timeout-minutes: 1
+
+      - name: redirect-create-output1
+        id: redirect-create-output1
+        uses: classroom-resources/autograding-command-grader@v1
+        with:
+          test-name: redirect-create-output1
+          setup-command: chmod +x ./testcases/redirect_create_output1.sh
+          command: bash -lc 'cd testcases && ./redirect_create_output1.sh'
+          expected-output: "2"
+          comparison-method: exact
+          timeout: 10
+          max-score: 2
+        timeout-minutes: 1
+
+      - name: cat-input-output1
+        id: cat-input-output1
+        uses: classroom-resources/autograding-command-grader@v1
+        with:
+          test-name: cat-input-output1
+          setup-command: chmod +x ./testcases/cat_input_output1.sh
+          command: bash -lc 'cd testcases && ./cat_input_output1.sh'
+          expected-output: "2"
+          comparison-method: exact
+          timeout: 10
+          max-score: 2
+        timeout-minutes: 1
+
+      - name: append-and-grep-line
+        id: append-and-grep-line
+        uses: classroom-resources/autograding-command-grader@v1
+        with:
+          test-name: append-and-grep-line
+          setup-command: chmod +x ./testcases/append_and_grep_line.sh
+          command: bash -lc 'cd testcases && ./append_and_grep_line.sh'
+          expected-output: "2"
+          comparison-method: exact
+          timeout: 10
+          max-score: 2
+        timeout-minutes: 1
+
+      - name: count-ls-wc
+        id: count-ls-wc
+        uses: classroom-resources/autograding-command-grader@v1
+        with:
+          test-name: count-ls-wc
+          setup-command: chmod +x ./testcases/count_ls_wc.sh
+          command: bash -lc 'cd testcases && ./count_ls_wc.sh'
+          expected-output: "2"
+          comparison-method: exact
+          timeout: 10
+          max-score: 2
+        timeout-minutes: 1
+
+      - name: background-sleep2
+        id: background-sleep2
+        uses: classroom-resources/autograding-command-grader@v1
+        with:
+          test-name: background-sleep2
+          setup-command: chmod +x ./testcases/background_sleep2.sh
+          command: bash -lc 'cd testcases && ./background_sleep2.sh'
+          expected-output: "2"
+          comparison-method: exact
+          timeout: 15
+          max-score: 2
+        timeout-minutes: 2
+
+      - name: cd-up-message
+        id: cd-up-message
+        uses: classroom-resources/autograding-command-grader@v1
+        with:
+          test-name: cd-up-message
+          setup-command: chmod +x ./testcases/cd_up_message.sh
+          command: bash -lc 'cd testcases && ./cd_up_message.sh'
+          expected-output: "2"
+          comparison-method: exact
+          timeout: 10
+          max-score: 2
+        timeout-minutes: 1
+
+      - name: pwd-test
+        id: pwd-test
+        uses: classroom-resources/autograding-command-grader@v1
+        with:
+          test-name: pwd-test
+          setup-command: chmod +x ./testcases/pwd_test.sh
+          command: bash -lc 'cd testcases && ./pwd_test.sh'
+          expected-output: "2"
+          comparison-method: exact
+          timeout: 10
+          max-score: 2
+        timeout-minutes: 1
+
+      - name: stderr-redirection
+        id: stderr-redirection
+        uses: classroom-resources/autograding-command-grader@v1
+        with:
+          test-name: stderr-redirection
+          setup-command: chmod +x ./testcases/stderr_redirection.sh
+          command: bash -lc 'cd testcases && ./stderr_redirection.sh'
+          expected-output: "2"
+          comparison-method: exact
+          timeout: 10
+          max-score: 2
+        timeout-minutes: 1
+
+      - name: log-file-linecount
+        id: log-file-linecount
+        uses: classroom-resources/autograding-command-grader@v1
+        with:
+          test-name: log-file-linecount
+          setup-command: chmod +x ./testcases/log_file_linecount.sh
+          command: bash -lc 'cd testcases && ./log_file_linecount.sh'
+          expected-output: "2"
+          comparison-method: exact
+          timeout: 20
+          max-score: 2
+        timeout-minutes: 2
+
+      # ---------------- RESULTS REPORTER ----------------
+      - name: Autograding Reporter
+        uses: classroom-resources/autograding-grading-reporter@v1
+        env:
+          BASIC-LS-AL_RESULTS:                 "${{ steps.basic-ls-al.outputs.result }}"
+          ECHO-HELLO-OS-LAB_RESULTS:           "${{ steps.echo-hello-os-lab.outputs.result }}"
+          REDIRECT-CREATE-OUTPUT1_RESULTS:     "${{ steps.redirect-create-output1.outputs.result }}"
+          CAT-INPUT-OUTPUT1_RESULTS:           "${{ steps.cat-input-output1.outputs.result }}"
+          APPEND-AND-GREP-LINE_RESULTS:        "${{ steps.append-and-grep-line.outputs.result }}"
+          COUNT-LS-WC_RESULTS:                 "${{ steps.count-ls-wc.outputs.result }}"
+          BACKGROUND-SLEEP2_RESULTS:           "${{ steps.background-sleep2.outputs.result }}"
+          CD-UP-MESSAGE_RESULTS:               "${{ steps.cd-up-message.outputs.result }}"
+          PWD-TEST_RESULTS:                    "${{ steps.pwd-test.outputs.result }}"
+          STDERR-REDIRECTION_RESULTS:          "${{ steps.stderr-redirection.outputs.result }}"
+          LOG-FILE-LINECOUNT_RESULTS:          "${{ steps.log-file-linecount.outputs.result }}"
+        with:
+          runners: >
+            basic-ls-al,
+            echo-hello-os-lab,
+            redirect-create-output1,
+            cat-input-output1,
+            append-and-grep-line,
+            count-ls-wc,
+            background-sleep2,
+            cd-up-message,
+            pwd-test,
+            stderr-redirection,
+            log-file-linecount
